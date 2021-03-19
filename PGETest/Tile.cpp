@@ -57,4 +57,15 @@ public:
 		botRightCollisionBox = { x + tileSize, y + tileSize };
 	}
 
+	std::string toString()
+	{
+		std::string s = "";
+
+		s += "Coords: ( " + std::to_string(x) + ", " + std::to_string(y) + " )\n";
+		s += "TileType: " + std::to_string(type) + "\n";
+		s += "Collision: ( " + std::to_string(topLeftCollisionBox.x) + ", " + std::to_string(topLeftCollisionBox.y) + " ) ";
+		s += "( " + std::to_string(botRightCollisionBox.x) + ", " + std::to_string(botRightCollisionBox.y) + " )\n";
+
+		return s;
+	}
 };
