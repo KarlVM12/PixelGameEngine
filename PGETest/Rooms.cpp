@@ -12,7 +12,7 @@ public:
 
 	Tile room1[6][6] = { {w,w,w,w,w,w},
 						 {w,n,n,n,n,w},
-						 {w,n,w,n,n,w},
+						 {w,n,n,n,n,w},
 						 {w,n,n,n,n,w},
 						 {w,n,n,n,n,w},
 						 {w,w,w,w,w,w} };
