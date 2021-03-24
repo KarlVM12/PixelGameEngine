@@ -44,6 +44,11 @@ public:
 	olc::Key currentKey = olc::Key::NONE;
 	bool allowKeyW = true, allowKeyA = true, allowKeyS = true, allowKeyD = true;
 	
+	// Quill variables for health
+	olc::Sprite* sprQuill = nullptr;
+	olc::Decal* decQuill = nullptr;
+
+
 	// Wall variables
 	olc::Sprite* sprWall = nullptr;
 	olc::Decal* decWall = nullptr;
@@ -57,6 +62,8 @@ public:
 
 	// Main Menu
 	bool MAINMENUACTIVE = true;
+	olc::Sprite* sprMainMenuBackground = nullptr;
+	olc::Decal* decMainMenuBackground = nullptr;
 	
 
 
@@ -72,6 +79,11 @@ public:
 		// initializes player collision
 		playerCollisionTopLeft = { float(xPosition), float(yPosition) };
 		playerCollisionBotRight = { float((decHam->sprite->width) * 3.5), float((decHam->sprite->height) * 3.5) };
+
+		// loads quill sprite
+		sprQuill = new olc::Sprite("c:/Users/Karl/Documents/GameSourceArt/Quill2_2.png");
+		decQuill = new olc::Decal(sprQuill);
+
 
 		// loads wall sprite
 		sprWall = new olc::Sprite("C:/Users/Karl/Documents/GameSourceArt/Wall.png");
@@ -89,8 +101,20 @@ public:
 		}
 
 		// loads menu sprite
-		sprMenu = new olc::Sprite("C:/Users/Karl/Documents/GameSourceArt/DialogBox.png");
+		sprMenu = new olc::Sprite("C:/Users/Karl/Documents/GameSourceArt/DialogBox2.png");
 		decMenu = new olc::Decal(sprMenu);
+
+		// loads main menu background
+		sprMainMenuBackground = new olc::Sprite("C:/Users/Karl/Documents/GameSourceArt/MainMenuBackground.png");
+		decMainMenuBackground = new olc::Decal(sprMainMenuBackground);
+
+		/*
+		int mmbackground = CreateLayer();
+		SetDrawTarget(mmbackground);		
+		DrawDecal({ 0.0f, 0.0f }, decMainMenuBackground);
+		EnableLayer(mmbackground, true);
+		SetDrawTarget(nullptr);
+		*/
 
 
 		return true;
@@ -100,10 +124,12 @@ public:
 	{
 		if (MAINMENUACTIVE) // Main Menu
 		{
-			Clear(olc::DARK_BLUE);
-			std::string startGame = "Start Game";
+			Clear(olc::VERY_DARK_YELLOW);
 
-			DrawString({ 185, 100 }, startGame, olc::WHITE, 3);
+
+			std::string startGame = "Start Game";
+			DrawString({ 185, 100 }, startGame, olc::BLACK, 3);
+			//DrawDecal({ 0.0f, 0.0f }, decMainMenuBackground, { 1.0f , 1.0f });
 
 			olc::vf2d mouse = { float(GetMouseX()), float(GetMouseY()) };
 
@@ -135,7 +161,7 @@ public:
 						DrawDecal({ float(j * 100), float(i * 100) }, decWall);
 
 						// Collision rectangle for wall tiles
-						DrawRect({ int(j * 100), int(i * 100) }, { int(r.room1[i][j].tileSize), int(r.room1[i][j].tileSize) }, olc::GREEN);
+						//DrawRect({ int(j * 100), int(i * 100) }, { int(r.room1[i][j].tileSize), int(r.room1[i][j].tileSize) }, olc::GREEN);
 
 					}
 
@@ -224,7 +250,15 @@ public:
 			// Draws player sprite
 			DrawDecal({ float(xPosition), float(yPosition) }, decHam, { PLAYER_SPRITE_SCALE, PLAYER_SPRITE_SCALE });
 
+			// Menu box that holds quills
+			DrawPartialDecal({ 100.0f, 100.0f }, { 48.0f, 64.0f }, decMenu, { 0.0f, 0.0f }, {16.0f, 24.0f});
+			DrawPartialDecal({ 148.0f, 100.0f }, { 48.0f, 64.0f }, decMenu, { 8.0f, 0.0f }, { 8.0f, 24.0f });
+			DrawPartialDecal({ 196.0f, 100.0f }, { 48.0f, 64.0f }, decMenu, { 8.0f, 0.0f }, { 16.0f, 24.0f });
 
+			// Three quills
+			DrawDecal({ 120.0f, 118.0f }, decQuill, {2.0f, 2.0f});
+			DrawDecal({ 155.0f, 118.0f }, decQuill, { 2.0f, 2.0f });
+			DrawDecal({ 190.0f, 118.0f }, decQuill, { 2.0f, 2.0f });
 
 
 
