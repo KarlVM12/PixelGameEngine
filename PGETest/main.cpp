@@ -39,6 +39,7 @@ public:
 	double yPosition = screenSize / 2;
 	double moveSpeed = 0.5;
 	olc::vf2d playerCollisionTopLeft, playerCollisionBotRight;
+	int playerHealth = 3;
 	
 	// Key controls
 	olc::Key currentKey = olc::Key::NONE;
@@ -164,15 +165,22 @@ public:
 						//DrawRect({ int(j * 100), int(i * 100) }, { int(r.room1[i][j].tileSize), int(r.room1[i][j].tileSize) }, olc::GREEN);
 
 					}
+					else if (r.room1[i][j].type == Tile::Tile::DAMAGE)
+					{
+						DrawRect({ (j * 100), (i * 100) }, { 100, 100 });
+					}
 
 				}
 			}
 
-			bool didPlayerCollide = playerCollide(r.room1);
+			std::pair<bool, int> didPlayerCollide = playerCollide(r.room1);
 
 			// Player collisions with objects which sends the player away from the current key they just pressed
-			if (didPlayerCollide)
+			if (didPlayerCollide.first)
 			{
+				if(didPlayerCollide.second == Tile::TileType::DAMAGE)
+					playerHealth--;
+
 				if (currentKey == olc::Key::W)
 				{
 					yPosition++;
@@ -256,10 +264,23 @@ public:
 			DrawPartialDecal({ 196.0f, 100.0f }, { 48.0f, 64.0f }, decMenu, { 8.0f, 0.0f }, { 16.0f, 24.0f });
 
 			// Three quills
-			DrawDecal({ 120.0f, 118.0f }, decQuill, {2.0f, 2.0f});
-			DrawDecal({ 155.0f, 118.0f }, decQuill, { 2.0f, 2.0f });
-			DrawDecal({ 190.0f, 118.0f }, decQuill, { 2.0f, 2.0f });
+			if (playerHealth == 3)
+			{
+				DrawDecal({ 120.0f, 118.0f }, decQuill, { 2.0f, 2.0f });
+				DrawDecal({ 155.0f, 118.0f }, decQuill, { 2.0f, 2.0f });
+				DrawDecal({ 190.0f, 118.0f }, decQuill, { 2.0f, 2.0f });
 
+			}
+			else if (playerHealth == 2)
+			{
+				DrawDecal({ 120.0f, 118.0f }, decQuill, { 2.0f, 2.0f });
+				DrawDecal({ 155.0f, 118.0f }, decQuill, { 2.0f, 2.0f });
+
+			}
+			else if (playerHealth == 1)
+			{
+				DrawDecal({ 120.0f, 118.0f }, decQuill, { 2.0f, 2.0f });
+			}
 
 
 
@@ -277,28 +298,31 @@ public:
 	}
 
 public:
-	bool playerCollide(Tile tile[6][6])
+	std::pair<bool, int> playerCollide(Tile tile[6][6])
 	{
 		for (int i = 0; i < std::size(r.room1); i++)
 		{
 			for (int j = 0; j < std::size(r.room1[i]); j++)
 			{
-				if (r.room1[i][j].type == 1)
+				if (r.room1[i][j].type == 1 || r.room1[i][j].type == 2)
 				{
 					if (xPosition >= tile[i][j].x && xPosition <= (tile[i][j].x + tile[i][j].tileSize) && yPosition >= tile[i][j].y && yPosition <= (tile[i][j].y + tile[i][j].tileSize))
-						return true;
+						return std::make_pair(true, r.room1[i][j].type);
+
 					if (xPosition + playerCollisionBotRight.x >= tile[i][j].x && xPosition + playerCollisionBotRight.x <= (tile[i][j].x + tile[i][j].tileSize) && yPosition >= tile[i][j].y && yPosition <= (tile[i][j].y + tile[i][j].tileSize))
-						return true;
+						return std::make_pair(true, r.room1[i][j].type);
+
 					if (xPosition >= tile[i][j].x && xPosition <= (tile[i][j].x + tile[i][j].tileSize) && yPosition + playerCollisionBotRight.y >= tile[i][j].y && yPosition + playerCollisionBotRight.y <= (tile[i][j].y + tile[i][j].tileSize))
-						return true;
+						return std::make_pair(true, r.room1[i][j].type);
+
 					if (xPosition + playerCollisionBotRight.x >= tile[i][j].x && xPosition + playerCollisionBotRight.x <= (tile[i][j].x + tile[i][j].tileSize) && yPosition + playerCollisionBotRight.y >= tile[i][j].y && yPosition + playerCollisionBotRight.y <= (tile[i][j].y + tile[i][j].tileSize))
-						return true;
+						return std::make_pair(true, r.room1[i][j].type);
 				}
 
 			}
 		}
 
-		return false;
+		return std::make_pair(false, 0);
 	}
 
 };
