@@ -54,8 +54,15 @@ public:
 	olc::Sprite* sprWall = nullptr;
 	olc::Decal* decWall = nullptr;
 
+	// Door variables
+	olc::Sprite* sprDoor = nullptr;
+	olc::Decal* decDoor = nullptr;
+
 	// Rooms variable
 	Rooms r;
+	std::vector<std::vector<Tile>> currentRoom;
+	//Tile vect[3][6][6] = { r.room1, r.room2, r.room3 };
+
 
 	// Menu variables
 	olc::Sprite* sprMenu = nullptr;
@@ -91,15 +98,21 @@ public:
 		decWall = new olc::Decal(sprWall);
 
 		// initializes each wall in the current room
-		for (int i = 0; i < std::size(r.room1); i++)
+		currentRoom = r.room1;
+
+		for (int i = 0; i < currentRoom.size(); i++)
 		{
-			for (int j = 0; j < std::size(r.room1[i]); j++)
+			for (int j = 0; j < currentRoom[i].size(); j++)
 			{
-				r.room1[i][j].setX(float(j * 100));
-				r.room1[i][j].setY(float(i * 100));
+				currentRoom[i][j].setX(float(j * 100));
+				currentRoom[i][j].setY(float(i * 100));
 			}
 
 		}
+
+		// loads door sprite
+		sprDoor = new olc::Sprite("C:/Users/Karl/Documents/GameSourceArt/Door.png");
+		decDoor = new olc::Decal(sprDoor);
 
 		// loads menu sprite
 		sprMenu = new olc::Sprite("C:/Users/Karl/Documents/GameSourceArt/DialogBox2.png");
@@ -125,18 +138,18 @@ public:
 	{
 		if (MAINMENUACTIVE) // Main Menu
 		{
-			Clear(olc::VERY_DARK_YELLOW);
+			Clear(olc::YELLOW);
 
-
+			std::string pixelton = "Pixelton";
 			std::string startGame = "Start Game";
-			DrawString({ 185, 100 }, startGame, olc::BLACK, 3);
+			DrawString({ 185, 100 }, pixelton, olc::BLACK, 3);
 			//DrawDecal({ 0.0f, 0.0f }, decMainMenuBackground, { 1.0f , 1.0f });
 
 			olc::vf2d mouse = { float(GetMouseX()), float(GetMouseY()) };
 
 			if (mouse.x >= 185 && mouse.x <= 425 && mouse.y >= 90 && mouse.y <= 125)
 			{
-				DrawString({ 185, 100 }, startGame, olc::YELLOW, 3);
+				DrawString({ 185, 100 }, pixelton, olc::WHITE, 3);
 				if (GetMouse(0).bPressed)
 					MAINMENUACTIVE = false;
 			}
@@ -152,11 +165,11 @@ public:
 
 
 			// draws wall sprites
-			for (int i = 0; i < std::size(r.room1); i++)
+			for (int i = 0; i < currentRoom.size(); i++)
 			{
-				for (int j = 0; j < std::size(r.room1[i]); j++)
+				for (int j = 0; j < currentRoom[i].size(); j++)
 				{
-					if (r.room1[i][j].type == Tile::TileType::WALL)
+					if (currentRoom[i][j].type == Tile::TileType::WALL)
 					{
 						// draws wall sprites
 						DrawDecal({ float(j * 100), float(i * 100) }, decWall);
@@ -165,21 +178,46 @@ public:
 						//DrawRect({ int(j * 100), int(i * 100) }, { int(r.room1[i][j].tileSize), int(r.room1[i][j].tileSize) }, olc::GREEN);
 
 					}
-					else if (r.room1[i][j].type == Tile::Tile::DAMAGE)
+					else if (currentRoom[i][j].type == Tile::Tile::DAMAGE)
 					{
-						DrawRect({ (j * 100), (i * 100) }, { 100, 100 });
+						DrawRect({ (j * 100), (i * 100) }, { 100, 100 }, olc::RED);
+					}
+					else if (currentRoom[i][j].type == Tile::Tile::HEAL)
+					{
+						DrawRect({ (j * 100), (i * 100) }, { 100, 100 }, olc::GREEN);
+					}
+					else if (currentRoom[i][j].type == Tile::Tile::DOOR)
+					{
+						DrawDecal({ float(j * 100), float(i * 100) }, decDoor);
 					}
 
 				}
 			}
 
-			std::pair<bool, int> didPlayerCollide = playerCollide(r.room1);
+			std::pair<bool, int> didPlayerCollide = playerCollide(currentRoom);
 
 			// Player collisions with objects which sends the player away from the current key they just pressed
-			if (didPlayerCollide.first)
+			if (didPlayerCollide.first) // first contains the bool of collision
 			{
-				if(didPlayerCollide.second == Tile::TileType::DAMAGE)
+				if(didPlayerCollide.second == Tile::TileType::DAMAGE) // second contains the TileType it collided with
 					playerHealth--;
+				if (didPlayerCollide.second == Tile::TileType::HEAL) // second contains the TileType it collided with
+					playerHealth++;
+				if (didPlayerCollide.second == Tile::TileType::DOOR) // second contains the TileType it collided with
+				{
+					for (int i = 0; i < r.room2.size(); i++)
+					{
+						for (int j = 0; j < r.room2[i].size(); j++)
+						{
+							r.room2[i][j].setX(float(j * 100));
+							r.room2[i][j].setY(float(i * 100));
+						}
+
+					}
+
+					currentRoom = r.room2;
+				}
+
 
 				if (currentKey == olc::Key::W)
 				{
@@ -282,6 +320,11 @@ public:
 				DrawDecal({ 120.0f, 118.0f }, decQuill, { 2.0f, 2.0f });
 			}
 
+			// Health bounds
+			if (playerHealth < 0)
+				playerHealth = 0;
+			else if (playerHealth > 3)
+				playerHealth = 3;
 
 
 
@@ -298,31 +341,50 @@ public:
 	}
 
 public:
-	std::pair<bool, int> playerCollide(Tile tile[6][6])
+	std::pair<bool, int> playerCollide(std::vector<std::vector<Tile>> tile)
 	{
-		for (int i = 0; i < std::size(r.room1); i++)
+		for (int i = 0; i < tile.size(); i++)
 		{
-			for (int j = 0; j < std::size(r.room1[i]); j++)
+			for (int j = 0; j < tile[i].size(); j++)
 			{
-				if (r.room1[i][j].type == 1 || r.room1[i][j].type == 2)
+				if (tile[i][j].type > 0)
 				{
 					if (xPosition >= tile[i][j].x && xPosition <= (tile[i][j].x + tile[i][j].tileSize) && yPosition >= tile[i][j].y && yPosition <= (tile[i][j].y + tile[i][j].tileSize))
-						return std::make_pair(true, r.room1[i][j].type);
+						return std::make_pair(true, tile[i][j].type);
 
 					if (xPosition + playerCollisionBotRight.x >= tile[i][j].x && xPosition + playerCollisionBotRight.x <= (tile[i][j].x + tile[i][j].tileSize) && yPosition >= tile[i][j].y && yPosition <= (tile[i][j].y + tile[i][j].tileSize))
-						return std::make_pair(true, r.room1[i][j].type);
+						return std::make_pair(true, tile[i][j].type);
 
 					if (xPosition >= tile[i][j].x && xPosition <= (tile[i][j].x + tile[i][j].tileSize) && yPosition + playerCollisionBotRight.y >= tile[i][j].y && yPosition + playerCollisionBotRight.y <= (tile[i][j].y + tile[i][j].tileSize))
-						return std::make_pair(true, r.room1[i][j].type);
+						return std::make_pair(true, tile[i][j].type);
 
 					if (xPosition + playerCollisionBotRight.x >= tile[i][j].x && xPosition + playerCollisionBotRight.x <= (tile[i][j].x + tile[i][j].tileSize) && yPosition + playerCollisionBotRight.y >= tile[i][j].y && yPosition + playerCollisionBotRight.y <= (tile[i][j].y + tile[i][j].tileSize))
-						return std::make_pair(true, r.room1[i][j].type);
+						return std::make_pair(true, tile[i][j].type);
 				}
 
 			}
 		}
 
 		return std::make_pair(false, 0);
+	}
+
+	void switchRooms(std::vector<std::vector<Tile>> currentroom, std::vector<std::vector<Tile>> newRoom)
+	{
+		// reaassigns all the tiles in currentRoom to the new rooms
+		currentroom = newRoom;
+
+		// remakes all the collisions boxes when switching rooms
+		for (int i = 0; i < currentroom.size(); i++)
+		{
+			for (int j = 0; j < currentroom[i].size(); j++)
+			{
+				newRoom[i][j].setX(float(j * 100));
+				newRoom[i][j].setY(float(i * 100));
+			}
+
+		}
+
+		
 	}
 
 };

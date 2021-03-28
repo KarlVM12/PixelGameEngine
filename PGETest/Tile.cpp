@@ -7,9 +7,13 @@ public:
 	float x, y;
 	float tileSize = 100;
 	// Tile Type
-	enum TileType { NOTHING, WALL, DAMAGE } type;
+	enum TileType { NOTHING, WALL, DAMAGE, HEAL, DOOR } type;
 	
 	olc::vf2d topLeftCollisionBox, botRightCollisionBox;
+
+	Tile() {}
+
+
 
 	Tile(TileType type_)
 	{
