@@ -60,8 +60,9 @@ public:
 
 	// Rooms variable
 	Rooms r;
+	int currentRoomNumber = 0;
 	std::vector<std::vector<Tile>> currentRoom;
-	//Tile vect[3][6][6] = { r.room1, r.room2, r.room3 };
+	std::vector<std::vector<std::vector<Tile>>> listOfRooms = {r.room1, r.room2};
 
 
 	// Menu variables
@@ -98,8 +99,8 @@ public:
 		decWall = new olc::Decal(sprWall);
 
 		// initializes each wall in the current room
-		currentRoom = r.room1;
-
+		currentRoom = listOfRooms[currentRoomNumber];
+		
 		for (int i = 0; i < currentRoom.size(); i++)
 		{
 			for (int j = 0; j < currentRoom[i].size(); j++)
@@ -109,7 +110,7 @@ public:
 			}
 
 		}
-
+		
 		// loads door sprite
 		sprDoor = new olc::Sprite("C:/Users/Karl/Documents/GameSourceArt/Door.png");
 		decDoor = new olc::Decal(sprDoor);
@@ -205,17 +206,21 @@ public:
 					playerHealth++;
 				if (didPlayerCollide.second == Tile::TileType::DOOR) // second contains the TileType it collided with
 				{
-					for (int i = 0; i < r.room2.size(); i++)
+					currentRoomNumber++;
+					if (currentRoomNumber > listOfRooms.size()-1)
+						currentRoomNumber = 0;
+
+					for (int i = 0; i < listOfRooms[currentRoomNumber].size(); i++)
 					{
-						for (int j = 0; j < r.room2[i].size(); j++)
+						for (int j = 0; j < listOfRooms[currentRoomNumber][i].size(); j++)
 						{
-							r.room2[i][j].setX(float(j * 100));
-							r.room2[i][j].setY(float(i * 100));
+							listOfRooms[currentRoomNumber][i][j].setX(float(j * 100));
+							listOfRooms[currentRoomNumber][i][j].setY(float(i * 100));
 						}
 
 					}
 
-					currentRoom = r.room2;
+					currentRoom = listOfRooms[currentRoomNumber];
 				}
 
 
@@ -385,6 +390,22 @@ public:
 		}
 
 		
+	}
+
+	void initializeRooms(std::vector<std::vector<std::vector<Tile>>> vect)
+	{
+		for (int i = 0; i < vect.size(); i++)
+		{
+			for (int j = 0; j < vect[i].size(); j++)
+			{
+				for (int k = 0; k < vect[i][j].size(); k++)
+				{
+					vect[i][j][k].setX(float(j * 100));
+					vect[i][j][k].setY(float(i * 100));
+				}
+
+			}
+		}
 	}
 
 };
