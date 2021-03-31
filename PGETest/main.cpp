@@ -62,8 +62,8 @@ public:
 	Rooms r;
 	int currentRoomNumber = 0;
 	std::vector<std::vector<Tile>> currentRoom;
-	std::vector<std::vector<std::vector<Tile>>> listOfRooms = {r.room1, r.room2};
-
+	std::vector<std::vector<std::vector<Tile>>> listOfRooms;
+	
 
 	// Menu variables
 	olc::Sprite* sprMenu = nullptr;
@@ -99,6 +99,10 @@ public:
 		decWall = new olc::Decal(sprWall);
 
 		// initializes each wall in the current room
+		r.randomDoor(r.room1,r.room2, rand() % 4 + 1);
+		srand(time(NULL));
+		r.randomDoor(r.room2, r.room3, rand() % 4 + 1);
+		listOfRooms = { r.room1, r.room2, r.room3 };
 		currentRoom = listOfRooms[currentRoomNumber];
 		
 		for (int i = 0; i < currentRoom.size(); i++)
@@ -195,21 +199,27 @@ public:
 				}
 			}
 
+
+			// Player Collision
 			std::pair<bool, int> didPlayerCollide = playerCollide(currentRoom);
 
 			// Player collisions with objects which sends the player away from the current key they just pressed
 			if (didPlayerCollide.first) // first contains the bool of collision
 			{
+				// Collision based on the tile hit
 				if(didPlayerCollide.second == Tile::TileType::DAMAGE) // second contains the TileType it collided with
 					playerHealth--;
 				if (didPlayerCollide.second == Tile::TileType::HEAL) // second contains the TileType it collided with
 					playerHealth++;
 				if (didPlayerCollide.second == Tile::TileType::DOOR) // second contains the TileType it collided with
 				{
+					// Increases Room Number to traverse rooms
 					currentRoomNumber++;
-					if (currentRoomNumber > listOfRooms.size()-1)
-						currentRoomNumber = 0;
+					//if (currentRoomNumber > listOfRooms.size()-1)
+						//currentRoomNumber = 0;
 
+					// Sets x and y coords of current room to add collision
+					/*
 					for (int i = 0; i < listOfRooms[currentRoomNumber].size(); i++)
 					{
 						for (int j = 0; j < listOfRooms[currentRoomNumber][i].size(); j++)
@@ -219,11 +229,47 @@ public:
 						}
 
 					}
+					*/
 
-					currentRoom = listOfRooms[currentRoomNumber];
+					// Changes current room to new room
+					//currentRoom = listOfRooms[currentRoomNumber];
+
+					if (currentKey == olc::Key::D)
+					{
+						for (int i = 0; i < listOfRooms[currentRoomNumber].size(); i++)
+						{
+							for (int j = 0; j < listOfRooms[currentRoomNumber][i].size(); j++)
+							{
+								listOfRooms[currentRoomNumber][i][j].setX(float(j * 100));
+								listOfRooms[currentRoomNumber][i][j].setY(float(i * 100));
+							}
+
+						}
+						currentRoom = listOfRooms[currentRoomNumber];
+						xPosition -= 350;
+					}
+					else if (currentKey == olc::Key::A)
+					{
+						currentRoomNumber-=2;
+						std::cout << "inside: " << currentRoomNumber << std::endl;
+						for (int i = 0; i < listOfRooms[currentRoomNumber].size(); i++)
+						{
+							for (int j = 0; j < listOfRooms[currentRoomNumber][i].size(); j++)
+							{
+								listOfRooms[currentRoomNumber][i][j].setX(float(j * 100));
+								listOfRooms[currentRoomNumber][i][j].setY(float(i * 100));
+							}
+
+						}
+						currentRoom = listOfRooms[currentRoomNumber];
+						xPosition += 350;
+
+					}
 				}
+				std::cout << currentRoomNumber << std::endl;
 
 
+				// determines which key to not allow based on collision
 				if (currentKey == olc::Key::W)
 				{
 					yPosition++;

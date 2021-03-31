@@ -13,8 +13,6 @@ public:
 
 	Tile() {}
 
-
-
 	Tile(TileType type_)
 	{
 		x = 0;
