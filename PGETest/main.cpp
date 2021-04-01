@@ -99,21 +99,14 @@ public:
 		decWall = new olc::Decal(sprWall);
 
 		// initializes each wall in the current room
+		srand(time(NULL));
 		r.randomDoor(r.room1,r.room2, rand() % 4 + 1);
 		srand(time(NULL));
 		r.randomDoor(r.room2, r.room3, rand() % 4 + 1);
 		listOfRooms = { r.room1, r.room2, r.room3 };
 		currentRoom = listOfRooms[currentRoomNumber];
+		loadRoom(currentRoom);
 		
-		for (int i = 0; i < currentRoom.size(); i++)
-		{
-			for (int j = 0; j < currentRoom[i].size(); j++)
-			{
-				currentRoom[i][j].setX(float(j * 100));
-				currentRoom[i][j].setY(float(i * 100));
-			}
-
-		}
 		
 		// loads door sprite
 		sprDoor = new olc::Sprite("C:/Users/Karl/Documents/GameSourceArt/Door.png");
@@ -213,61 +206,24 @@ public:
 					playerHealth++;
 				if (didPlayerCollide.second == Tile::TileType::DOOR) // second contains the TileType it collided with
 				{
-					// Increases Room Number to traverse rooms
-					currentRoomNumber++;
-					//if (currentRoomNumber > listOfRooms.size()-1)
-						//currentRoomNumber = 0;
-
-					// Sets x and y coords of current room to add collision
-					/*
-					for (int i = 0; i < listOfRooms[currentRoomNumber].size(); i++)
+					if (currentKey == olc::Key::D) // if going right into a door, makes sure player loads on left side of room
 					{
-						for (int j = 0; j < listOfRooms[currentRoomNumber][i].size(); j++)
-						{
-							listOfRooms[currentRoomNumber][i][j].setX(float(j * 100));
-							listOfRooms[currentRoomNumber][i][j].setY(float(i * 100));
-						}
+						currentRoomNumber++;
 
-					}
-					*/
-
-					// Changes current room to new room
-					//currentRoom = listOfRooms[currentRoomNumber];
-
-					if (currentKey == olc::Key::D)
-					{
-						for (int i = 0; i < listOfRooms[currentRoomNumber].size(); i++)
-						{
-							for (int j = 0; j < listOfRooms[currentRoomNumber][i].size(); j++)
-							{
-								listOfRooms[currentRoomNumber][i][j].setX(float(j * 100));
-								listOfRooms[currentRoomNumber][i][j].setY(float(i * 100));
-							}
-
-						}
 						currentRoom = listOfRooms[currentRoomNumber];
+						loadRoom(currentRoom);
 						xPosition -= 350;
 					}
-					else if (currentKey == olc::Key::A)
+					else if (currentKey == olc::Key::A) // if going left into a door, makes sure player loads on right side of room
 					{
-						currentRoomNumber-=2;
-						std::cout << "inside: " << currentRoomNumber << std::endl;
-						for (int i = 0; i < listOfRooms[currentRoomNumber].size(); i++)
-						{
-							for (int j = 0; j < listOfRooms[currentRoomNumber][i].size(); j++)
-							{
-								listOfRooms[currentRoomNumber][i][j].setX(float(j * 100));
-								listOfRooms[currentRoomNumber][i][j].setY(float(i * 100));
-							}
-
-						}
+						currentRoomNumber--;
+	
 						currentRoom = listOfRooms[currentRoomNumber];
+						loadRoom(currentRoom);
 						xPosition += 350;
 
 					}
 				}
-				std::cout << currentRoomNumber << std::endl;
-
 
 				// determines which key to not allow based on collision
 				if (currentKey == olc::Key::W)
@@ -348,27 +304,27 @@ public:
 			DrawDecal({ float(xPosition), float(yPosition) }, decHam, { PLAYER_SPRITE_SCALE, PLAYER_SPRITE_SCALE });
 
 			// Menu box that holds quills
-			DrawPartialDecal({ 100.0f, 100.0f }, { 48.0f, 64.0f }, decMenu, { 0.0f, 0.0f }, {16.0f, 24.0f});
-			DrawPartialDecal({ 148.0f, 100.0f }, { 48.0f, 64.0f }, decMenu, { 8.0f, 0.0f }, { 8.0f, 24.0f });
-			DrawPartialDecal({ 196.0f, 100.0f }, { 48.0f, 64.0f }, decMenu, { 8.0f, 0.0f }, { 16.0f, 24.0f });
+			DrawPartialDecal({ 10.0f, 10.0f }, { 48.0f, 64.0f }, decMenu, { 0.0f, 0.0f }, {16.0f, 24.0f});
+			DrawPartialDecal({ 58.0f, 10.0f }, { 48.0f, 64.0f }, decMenu, { 8.0f, 0.0f }, { 8.0f, 24.0f });
+			DrawPartialDecal({ 106.0f, 10.0f }, { 48.0f, 64.0f }, decMenu, { 8.0f, 0.0f }, { 16.0f, 24.0f });
 
 			// Three quills
 			if (playerHealth == 3)
 			{
-				DrawDecal({ 120.0f, 118.0f }, decQuill, { 2.0f, 2.0f });
-				DrawDecal({ 155.0f, 118.0f }, decQuill, { 2.0f, 2.0f });
-				DrawDecal({ 190.0f, 118.0f }, decQuill, { 2.0f, 2.0f });
+				DrawDecal({ 30.0f, 28.0f }, decQuill, { 2.0f, 2.0f });
+				DrawDecal({ 65.0f, 28.0f }, decQuill, { 2.0f, 2.0f });
+				DrawDecal({ 100.0f, 28.0f }, decQuill, { 2.0f, 2.0f });
 
 			}
 			else if (playerHealth == 2)
 			{
-				DrawDecal({ 120.0f, 118.0f }, decQuill, { 2.0f, 2.0f });
-				DrawDecal({ 155.0f, 118.0f }, decQuill, { 2.0f, 2.0f });
+				DrawDecal({ 30.0f, 28.0f }, decQuill, { 2.0f, 2.0f });
+				DrawDecal({ 65.0f, 28.0f }, decQuill, { 2.0f, 2.0f });
 
 			}
 			else if (playerHealth == 1)
 			{
-				DrawDecal({ 120.0f, 118.0f }, decQuill, { 2.0f, 2.0f });
+				DrawDecal({ 30.0f, 28.0f }, decQuill, { 2.0f, 2.0f });
 			}
 
 			// Health bounds
@@ -438,20 +394,17 @@ public:
 		
 	}
 
-	void initializeRooms(std::vector<std::vector<std::vector<Tile>>> vect)
+	void loadRoom(std::vector<std::vector<Tile>> &vect)
 	{
-		for (int i = 0; i < vect.size(); i++)
-		{
-			for (int j = 0; j < vect[i].size(); j++)
+			for (int i = 0; i < vect.size(); i++)
 			{
-				for (int k = 0; k < vect[i][j].size(); k++)
+				for (int j = 0; j < vect[i].size(); j++)
 				{
-					vect[i][j][k].setX(float(j * 100));
-					vect[i][j][k].setY(float(i * 100));
+					vect[i][j].setX(float(j * 100));
+					vect[i][j].setY(float(i * 100));
 				}
 
 			}
-		}
 	}
 
 };
