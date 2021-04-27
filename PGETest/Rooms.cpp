@@ -9,6 +9,7 @@
 #define dd Tile(Tile::TileType::DAMAGE)
 #define h Tile(Tile::TileType::HEAL)
 #define d Tile(Tile::TileType::DOOR)
+#define b Tile(Tile::TileType::BURR)
 
 
 class Rooms
@@ -25,7 +26,7 @@ public:
 	Rooms() {	}
 	
 	std::vector<std::vector<Tile>> room2 = { {w,w,w,w,w,w},
-											 {w,n,n,n,n,w},
+											 {w,n,n,b,n,w},
 											 {w,n,n,n,n,w},
 											 {w,n,n,n,n,w},
 											 {w,n,n,n,n,w},

@@ -41,6 +41,10 @@ public:
 	olc::vf2d playerCollisionTopLeft, playerCollisionBotRight;
 	int playerHealth = 3;
 	
+	// Second Player? Burr sprites
+	olc::Sprite* sprBurr = nullptr;
+	olc::Decal* decBurr = nullptr;
+
 	// Key controls
 	olc::Key currentKey = olc::Key::NONE;
 	bool allowKeyW = true, allowKeyA = true, allowKeyS = true, allowKeyD = true;
@@ -89,6 +93,11 @@ public:
 		playerCollisionTopLeft = { float(xPosition), float(yPosition) };
 		playerCollisionBotRight = { float((decHam->sprite->width) * 3.5), float((decHam->sprite->height) * 3.5) };
 
+		// loads Burr sprites
+		sprBurr = new olc::Sprite("c:/Users/Karl/Documents/GameSourceArt/ABurr.png");
+		decBurr = new olc::Decal(sprBurr);
+
+
 		// loads quill sprite
 		sprQuill = new olc::Sprite("c:/Users/Karl/Documents/GameSourceArt/Quill2_2.png");
 		decQuill = new olc::Decal(sprQuill);
@@ -101,7 +110,7 @@ public:
 		// initializes each wall in the current room
 		srand(time(NULL));
 		r.randomDoor(r.room1,r.room2, rand() % 4 + 1);
-		srand(time(NULL));
+	
 		r.randomDoor(r.room2, r.room3, rand() % 4 + 1);
 		listOfRooms = { r.room1, r.room2, r.room3 };
 		currentRoom = listOfRooms[currentRoomNumber];
@@ -188,6 +197,10 @@ public:
 					{
 						DrawDecal({ float(j * 100), float(i * 100) }, decDoor);
 					}
+					else if (currentRoom[i][j].type == Tile::Tile::BURR)
+					{
+						DrawDecal({ float(j * 100), float(i * 100) }, decBurr, { PLAYER_SPRITE_SCALE, PLAYER_SPRITE_SCALE });
+					}
 
 				}
 			}
@@ -195,6 +208,19 @@ public:
 
 			// Player Collision
 			std::pair<bool, int> didPlayerCollide = playerCollide(currentRoom);
+
+			/*
+			if (xPosition >= 350 && yPosition <= 250)
+			{
+				std::vector<std::string> talkOption = { "Press F to talk", "Pardon me, Are you Aaron Burr, Sir?" };
+				DrawString({ 180, 400 }, talkOption[0], olc::WHITE, 2);
+				if (GetKey(olc::Key::F).bPressed)
+				{
+					DrawString({ 100, 400 }, talkOption[1], olc::WHITE, 2);
+				}
+			}
+			*/
+
 
 			// Player collisions with objects which sends the player away from the current key they just pressed
 			if (didPlayerCollide.first) // first contains the bool of collision
@@ -224,6 +250,18 @@ public:
 
 					}
 				}
+				/*
+				if (didPlayerCollide.second == Tile::TileType::BURR)
+				{
+					std::string talkOption = "Press F to talk";
+					DrawString({ 180, 400  }, talkOption, olc::WHITE, 2);
+					if (GetKey(olc::Key::F).bPressed)
+					{
+						talkOption = "Pardon me, Are you Aaron Burr, Sir?";
+						DrawString({ 180, 400 }, talkOption, olc::WHITE, 2);
+					}
+				}
+				*/
 
 				// determines which key to not allow based on collision
 				if (currentKey == olc::Key::W)
