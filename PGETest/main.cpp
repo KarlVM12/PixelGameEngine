@@ -44,6 +44,11 @@ public:
 	// Second Player? Burr sprites
 	olc::Sprite* sprBurr = nullptr;
 	olc::Decal* decBurr = nullptr;
+	boolean collideWithBurr = false;
+
+	// Talk with Burr
+	std::vector<std::string> talkOptions = { "Press F to talk", "Hamilton: Pardon me, are\nyou Aaron Burr, Sir?", "Burr: That depends, Who's\nasking?" };
+	int currentTalkOption = 0;
 
 	// Key controls
 	olc::Key currentKey = olc::Key::NONE;
@@ -108,10 +113,14 @@ public:
 		decWall = new olc::Decal(sprWall);
 
 		// initializes each wall in the current room
+		
+		
+		// Randomizez the two doors between the three rooms
 		srand(time(NULL));
 		r.randomDoor(r.room1,r.room2, rand() % 4 + 1);
-	
 		r.randomDoor(r.room2, r.room3, rand() % 4 + 1);
+
+		// initializes the listOfRooms as well as loads the current room
 		listOfRooms = { r.room1, r.room2, r.room3 };
 		currentRoom = listOfRooms[currentRoomNumber];
 		loadRoom(currentRoom);
@@ -129,13 +138,16 @@ public:
 		sprMainMenuBackground = new olc::Sprite("C:/Users/Karl/Documents/GameSourceArt/MainMenuBackground.png");
 		decMainMenuBackground = new olc::Decal(sprMainMenuBackground);
 
-		/*
-		int mmbackground = CreateLayer();
-		SetDrawTarget(mmbackground);		
-		DrawDecal({ 0.0f, 0.0f }, decMainMenuBackground);
-		EnableLayer(mmbackground, true);
-		SetDrawTarget(nullptr);
-		*/
+		
+
+
+
+		//int mmbackground = CreateLayer();
+		//SetDrawTarget(mmbackground);		
+		//DrawDecal({ 0.0f, 0.0f }, decMainMenuBackground);
+		//EnableLayer(mmbackground, true);
+		//SetDrawTarget(nullptr);
+		
 
 
 		return true;
@@ -149,14 +161,15 @@ public:
 
 			std::string pixelton = "Pixelton";
 			std::string startGame = "Start Game";
-			DrawString({ 185, 100 }, pixelton, olc::BLACK, 3);
 			//DrawDecal({ 0.0f, 0.0f }, decMainMenuBackground, { 1.0f , 1.0f });
+			DrawStringDecal({ 185, 100 }, pixelton, olc::BLACK, { 3.0f, 3.0f });
 
 			olc::vf2d mouse = { float(GetMouseX()), float(GetMouseY()) };
 
+			// if mouse is in the borders of the Game Title (pixelton)
 			if (mouse.x >= 185 && mouse.x <= 425 && mouse.y >= 90 && mouse.y <= 125)
 			{
-				DrawString({ 185, 100 }, pixelton, olc::WHITE, 3);
+				DrawStringDecal({ 185, 100 }, pixelton, olc::WHITE, {3.0f, 3.0f});
 				if (GetMouse(0).bPressed)
 					MAINMENUACTIVE = false;
 			}
@@ -209,18 +222,6 @@ public:
 			// Player Collision
 			std::pair<bool, int> didPlayerCollide = playerCollide(currentRoom);
 
-			/*
-			if (xPosition >= 350 && yPosition <= 250)
-			{
-				std::vector<std::string> talkOption = { "Press F to talk", "Pardon me, Are you Aaron Burr, Sir?" };
-				DrawString({ 180, 400 }, talkOption[0], olc::WHITE, 2);
-				if (GetKey(olc::Key::F).bPressed)
-				{
-					DrawString({ 100, 400 }, talkOption[1], olc::WHITE, 2);
-				}
-			}
-			*/
-
 
 			// Player collisions with objects which sends the player away from the current key they just pressed
 			if (didPlayerCollide.first) // first contains the bool of collision
@@ -232,6 +233,11 @@ public:
 					playerHealth++;
 				if (didPlayerCollide.second == Tile::TileType::DOOR) // second contains the TileType it collided with
 				{
+					// Gets rid of Burr text upon entering a new room
+					collideWithBurr = false;
+					currentTalkOption = 0;
+
+					// Depending if going right or left, change room accordingly
 					if (currentKey == olc::Key::D) // if going right into a door, makes sure player loads on left side of room
 					{
 						currentRoomNumber++;
@@ -250,9 +256,16 @@ public:
 
 					}
 				}
-				/*
-				if (didPlayerCollide.second == Tile::TileType::BURR)
+				
+				
+				// Possible Solution is to get a boolean in each room that disappears after you leave a room
+				//	It would become true once you hit burr and then reset when you enter a new room
+				
+				if (didPlayerCollide.second == Tile::TileType::BURR || collideWithBurr == true)
 				{
+					collideWithBurr = true;
+
+					/*
 					std::string talkOption = "Press F to talk";
 					DrawString({ 180, 400  }, talkOption, olc::WHITE, 2);
 					if (GetKey(olc::Key::F).bPressed)
@@ -260,9 +273,9 @@ public:
 						talkOption = "Pardon me, Are you Aaron Burr, Sir?";
 						DrawString({ 180, 400 }, talkOption, olc::WHITE, 2);
 					}
+					*/
 				}
-				*/
-
+				
 				// determines which key to not allow based on collision
 				if (currentKey == olc::Key::W)
 				{
@@ -286,6 +299,39 @@ public:
 				}
 			}
 
+
+			// Talking with Burr
+			if (collideWithBurr)
+			{
+				// Selects current dialogue based on how many times player has pressed F
+				std::string talkOption = talkOptions[currentTalkOption];
+
+				//Drawing box that holds text
+				DrawPartialDecal({ 70.0f, 510.0f }, { 50.0f, 80.0f }, decMenu, { 0.0f, 0.0f }, { 16.0f, 24.0f }); // left curved edge
+				DrawPartialDecal({ 110.0f, 510.0f }, { 380.0f, 80.0f }, decMenu, { 8.0f, 0.0f }, { 8.0f, 24.0f }); // middle long
+				DrawPartialDecal({ 490.0f, 510.0f }, { 60.0f, 80.0f }, decMenu, { 8.0f, 0.0f }, { 24.0f, 24.0f }); // right curved edge
+
+				// Draws current Dialogue to text bos
+				DrawStringDecal({ 90, 530 }, talkOption, olc::WHITE, { 2.0f , 2.0f });
+				
+				// If player hits F, currentTalkOption is increased, incrementing to next dialogue
+				if (GetKey(olc::Key::F).bPressed)
+				{
+					currentTalkOption++;
+					
+					// if at last talk option, exit talk dialog
+					if (currentTalkOption >= talkOptions.size())
+					{
+						collideWithBurr = false;
+						currentTalkOption = 0;
+					}
+				}
+
+			}
+
+			
+
+			
 
 
 			// Drawing player collision box
