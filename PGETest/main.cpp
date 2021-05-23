@@ -35,6 +35,9 @@ public:
 	const float PLAYER_SPRITE_SCALE = 3.5;
 	olc::Sprite* sprHam = nullptr;
 	olc::Decal* decHam = nullptr;
+	olc::Sprite* sprHamSheet = nullptr;
+	olc::Decal* decHamSheet = nullptr;
+	int currentColumnOfHamSheet = 0; 
 	double xPosition = screenSize / 2;
 	double yPosition = screenSize / 2;
 	double moveSpeed = 0.5;
@@ -47,7 +50,7 @@ public:
 	boolean collideWithBurr = false;
 
 	// Talk with Burr
-	std::vector<std::string> talkOptions = { "Press F to talk", "Hamilton: Pardon me, are\nyou Aaron Burr, Sir?", "Burr: That depends, Who's\nasking?" };
+	std::vector<std::string> talkOptions = { "Press F to talk", "Hamilton: Pardon me, are\nyou Aaron Burr, Sir?", "Burr: That depends, Who's\nasking?"};
 	int currentTalkOption = 0;
 
 	// Key controls
@@ -93,6 +96,10 @@ public:
 		// loads player sprite from folder
 		sprHam = new olc::Sprite("C:/Users/Karl/Documents/GameSourceArt/AHam.png");
 		decHam = new olc::Decal(sprHam);
+
+		// loads ham sprite sheet from folder
+		sprHamSheet = new olc::Sprite("C:/Users/Karl/Documents/GameSourceArt/AHamSpriteSheet.png");
+		decHamSheet = new olc::Decal(sprHamSheet);
 
 		// initializes player collision
 		playerCollisionTopLeft = { float(xPosition), float(yPosition) };
@@ -346,21 +353,25 @@ public:
 			{
 				xPosition += moveSpeed;
 				currentKey = olc::Key::D;
+				currentColumnOfHamSheet++;
 			}
 			else if (GetKey(olc::Key::A).bHeld && allowKeyA)
 			{
 				xPosition -= moveSpeed;
 				currentKey = olc::Key::A;
+				currentColumnOfHamSheet++;
 			}
 			else if (GetKey(olc::Key::W).bHeld && allowKeyW)
 			{
 				yPosition -= moveSpeed;
 				currentKey = olc::Key::W;
+				currentColumnOfHamSheet++;
 			}
 			else if (GetKey(olc::Key::S).bHeld && allowKeyS)
 			{
 				yPosition += moveSpeed;
 				currentKey = olc::Key::S;
+				currentColumnOfHamSheet++;
 			}
 
 			// Shift causes player to run
@@ -385,7 +396,10 @@ public:
 			allowKeyW = true, allowKeyA = true, allowKeyS = true, allowKeyD = true;
 
 			// Draws player sprite
-			DrawDecal({ float(xPosition), float(yPosition) }, decHam, { PLAYER_SPRITE_SCALE, PLAYER_SPRITE_SCALE });
+			if (currentColumnOfHamSheet <= 3)
+				DrawPartialDecal({ float(xPosition), float(yPosition) }, { 13.0f*PLAYER_SPRITE_SCALE, 27.0f*PLAYER_SPRITE_SCALE}, decHamSheet, { (currentColumnOfHamSheet) * 13.0f, 0.0f }, { 13.0f, 27.0f });
+			else
+				currentColumnOfHamSheet = 0;
 
 			// Menu box that holds quills
 			DrawPartialDecal({ 10.0f, 10.0f }, { 48.0f, 64.0f }, decMenu, { 0.0f, 0.0f }, {16.0f, 24.0f});
