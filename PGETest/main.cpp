@@ -38,6 +38,7 @@ public:
 	olc::Sprite* sprHamSheet = nullptr;
 	olc::Decal* decHamSheet = nullptr;
 	int currentColumnOfHamSheet = 0; 
+	float elapsedTime = 0.0f;
 	double xPosition = screenSize / 2;
 	double yPosition = screenSize / 2;
 	double moveSpeed = 0.5;
@@ -352,26 +353,22 @@ public:
 			if (GetKey(olc::Key::D).bHeld && allowKeyD)
 			{
 				xPosition += moveSpeed;
-				currentKey = olc::Key::D;
-				currentColumnOfHamSheet++;
+				currentKey = olc::Key::D;;
 			}
 			else if (GetKey(olc::Key::A).bHeld && allowKeyA)
 			{
 				xPosition -= moveSpeed;
 				currentKey = olc::Key::A;
-				currentColumnOfHamSheet++;
 			}
 			else if (GetKey(olc::Key::W).bHeld && allowKeyW)
 			{
 				yPosition -= moveSpeed;
 				currentKey = olc::Key::W;
-				currentColumnOfHamSheet++;
 			}
 			else if (GetKey(olc::Key::S).bHeld && allowKeyS)
 			{
 				yPosition += moveSpeed;
 				currentKey = olc::Key::S;
-				currentColumnOfHamSheet++;
 			}
 
 			// Shift causes player to run
@@ -395,11 +392,13 @@ public:
 			// Keys allowed to press are reset after collision stops them from being allowed
 			allowKeyW = true, allowKeyA = true, allowKeyS = true, allowKeyD = true;
 
-			// Draws player sprite
-			if (currentColumnOfHamSheet <= 3)
-				DrawPartialDecal({ float(xPosition), float(yPosition) }, { 13.0f*PLAYER_SPRITE_SCALE, 27.0f*PLAYER_SPRITE_SCALE}, decHamSheet, { (currentColumnOfHamSheet) * 13.0f, 0.0f }, { 13.0f, 27.0f });
-			else
+			// Draws player sprite 
+			DrawPartialDecal({ float(xPosition), float(yPosition) }, { 13.0f * PLAYER_SPRITE_SCALE, 27.0f * PLAYER_SPRITE_SCALE }, decHamSheet, { (currentColumnOfHamSheet) * 13.0f, 0.0f }, { 13.0f, 27.0f });
+			
+			// Cycles through the Sprite Sheet for hamilton when it gets to the end of the sprites
+			if (currentColumnOfHamSheet >= 4) // there are 4 different sprites on the sprite sheets and it starts at 0
 				currentColumnOfHamSheet = 0;
+			
 
 			// Menu box that holds quills
 			DrawPartialDecal({ 10.0f, 10.0f }, { 48.0f, 64.0f }, decMenu, { 0.0f, 0.0f }, {16.0f, 24.0f});
@@ -440,7 +439,14 @@ public:
 			}
 
 		}
-		
+	
+		// Adds time to elapsedTime every 0.1 seconds so the graphic states of Ham can cycle through the sprite sheet
+		elapsedTime += fElapsedTime;
+		if (elapsedTime >= 0.1f)
+		{
+			elapsedTime = 0;
+			currentColumnOfHamSheet++;
+		}
 		
 		return true;
 	}
