@@ -37,27 +37,27 @@ public:
 	olc::Decal* decHam = nullptr;
 	olc::Sprite* sprHamSheet = nullptr;
 	olc::Decal* decHamSheet = nullptr;
-	int currentColumnOfHamSheet = 0; 
+	int currentColumnOfHamSheet = 0;
 	float elapsedTime = 0.0f;
 	double xPosition = screenSize / 2;
 	double yPosition = screenSize / 2;
 	double moveSpeed = 0.5;
 	olc::vf2d playerCollisionTopLeft, playerCollisionBotRight;
 	int playerHealth = 3;
-	
+
 	// Second Player? Burr sprites
 	olc::Sprite* sprBurr = nullptr;
 	olc::Decal* decBurr = nullptr;
 	boolean collideWithBurr = false;
 
 	// Talk with Burr
-	std::vector<std::string> talkOptions = { "Press F to talk", "Hamilton: Pardon me, are\nyou Aaron Burr, Sir?", "Burr: That depends, Who's\nasking?"};
+	std::vector<std::string> talkOptions = { "Press F to talk", "Hamilton: Pardon me, are\nyou Aaron Burr, Sir?", "Burr: That depends, Who's\nasking?" };
 	int currentTalkOption = 0;
 
 	// Key controls
 	olc::Key currentKey = olc::Key::NONE;
 	bool allowKeyW = true, allowKeyA = true, allowKeyS = true, allowKeyD = true;
-	
+
 	// Quill variables for health
 	olc::Sprite* sprQuill = nullptr;
 	olc::Decal* decQuill = nullptr;
@@ -76,7 +76,7 @@ public:
 	int currentRoomNumber = 0;
 	std::vector<std::vector<Tile>> currentRoom;
 	std::vector<std::vector<std::vector<Tile>>> listOfRooms;
-	
+
 
 	// Menu variables
 	olc::Sprite* sprMenu = nullptr;
@@ -86,7 +86,7 @@ public:
 	bool MAINMENUACTIVE = true;
 	olc::Sprite* sprMainMenuBackground = nullptr;
 	olc::Decal* decMainMenuBackground = nullptr;
-	
+
 
 
 public:
@@ -121,19 +121,19 @@ public:
 		decWall = new olc::Decal(sprWall);
 
 		// initializes each wall in the current room
-		
-		
+
+
 		// Randomizez the two doors between the three rooms
 		srand(time(NULL));
-		r.randomDoor(r.room1,r.room2, rand() % 4 + 1);
+		r.randomDoor(r.room1, r.room2, rand() % 4 + 1);
 		r.randomDoor(r.room2, r.room3, rand() % 4 + 1);
 
 		// initializes the listOfRooms as well as loads the current room
 		listOfRooms = { r.room1, r.room2, r.room3 };
 		currentRoom = listOfRooms[currentRoomNumber];
 		loadRoom(currentRoom);
-		
-		
+
+
 		// loads door sprite
 		sprDoor = new olc::Sprite("C:/Users/Karl/Documents/GameSourceArt/Door.png");
 		decDoor = new olc::Decal(sprDoor);
@@ -146,7 +146,7 @@ public:
 		sprMainMenuBackground = new olc::Sprite("C:/Users/Karl/Documents/GameSourceArt/MainMenuBackground.png");
 		decMainMenuBackground = new olc::Decal(sprMainMenuBackground);
 
-		
+
 
 
 
@@ -155,7 +155,7 @@ public:
 		//DrawDecal({ 0.0f, 0.0f }, decMainMenuBackground);
 		//EnableLayer(mmbackground, true);
 		//SetDrawTarget(nullptr);
-		
+
 
 
 		return true;
@@ -177,7 +177,7 @@ public:
 			// if mouse is in the borders of the Game Title (pixelton)
 			if (mouse.x >= 185 && mouse.x <= 425 && mouse.y >= 90 && mouse.y <= 125)
 			{
-				DrawStringDecal({ 185, 100 }, pixelton, olc::WHITE, {3.0f, 3.0f});
+				DrawStringDecal({ 185, 100 }, pixelton, olc::WHITE, { 3.0f, 3.0f });
 				if (GetMouse(0).bPressed)
 					MAINMENUACTIVE = false;
 			}
@@ -235,7 +235,7 @@ public:
 			if (didPlayerCollide.first) // first contains the bool of collision
 			{
 				// Collision based on the tile hit
-				if(didPlayerCollide.second == Tile::TileType::DAMAGE) // second contains the TileType it collided with
+				if (didPlayerCollide.second == Tile::TileType::DAMAGE) // second contains the TileType it collided with
 					playerHealth--;
 				if (didPlayerCollide.second == Tile::TileType::HEAL) // second contains the TileType it collided with
 					playerHealth++;
@@ -257,18 +257,18 @@ public:
 					else if (currentKey == olc::Key::A) // if going left into a door, makes sure player loads on right side of room
 					{
 						currentRoomNumber--;
-	
+
 						currentRoom = listOfRooms[currentRoomNumber];
 						loadRoom(currentRoom);
 						xPosition += 350;
 
 					}
 				}
-				
-				
+
+
 				// Possible Solution is to get a boolean in each room that disappears after you leave a room
 				//	It would become true once you hit burr and then reset when you enter a new room
-				
+
 				if (didPlayerCollide.second == Tile::TileType::BURR || collideWithBurr == true)
 				{
 					collideWithBurr = true;
@@ -283,7 +283,7 @@ public:
 					}
 					*/
 				}
-				
+
 				// determines which key to not allow based on collision
 				if (currentKey == olc::Key::W)
 				{
@@ -321,12 +321,12 @@ public:
 
 				// Draws current Dialogue to text bos
 				DrawStringDecal({ 90, 530 }, talkOption, olc::WHITE, { 2.0f , 2.0f });
-				
+
 				// If player hits F, currentTalkOption is increased, incrementing to next dialogue
 				if (GetKey(olc::Key::F).bPressed)
 				{
 					currentTalkOption++;
-					
+
 					// if at last talk option, exit talk dialog
 					if (currentTalkOption >= talkOptions.size())
 					{
@@ -337,9 +337,9 @@ public:
 
 			}
 
-			
 
-			
+
+
 
 
 			// Drawing player collision box
@@ -394,14 +394,14 @@ public:
 
 			// Draws player sprite 
 			DrawPartialDecal({ float(xPosition), float(yPosition) }, { 13.0f * PLAYER_SPRITE_SCALE, 27.0f * PLAYER_SPRITE_SCALE }, decHamSheet, { (currentColumnOfHamSheet) * 13.0f, 0.0f }, { 13.0f, 27.0f });
-			
+
 			// Cycles through the Sprite Sheet for hamilton when it gets to the end of the sprites
-      if (currentColumnOfHamSheet >= 4) // there are 4 different sprites on the sprite sheets and it starts at 0
+			if (currentColumnOfHamSheet >= 4) // there are 4 different sprites on the sprite sheets and it starts at 0
 				currentColumnOfHamSheet = 0;
-			
+
 
 			// Menu box that holds quills
-			DrawPartialDecal({ 10.0f, 10.0f }, { 48.0f, 64.0f }, decMenu, { 0.0f, 0.0f }, {16.0f, 24.0f});
+			DrawPartialDecal({ 10.0f, 10.0f }, { 48.0f, 64.0f }, decMenu, { 0.0f, 0.0f }, { 16.0f, 24.0f });
 			DrawPartialDecal({ 58.0f, 10.0f }, { 48.0f, 64.0f }, decMenu, { 8.0f, 0.0f }, { 8.0f, 24.0f });
 			DrawPartialDecal({ 106.0f, 10.0f }, { 48.0f, 64.0f }, decMenu, { 8.0f, 0.0f }, { 16.0f, 24.0f });
 
@@ -439,7 +439,7 @@ public:
 			}
 
 		}
-	
+
 		// Adds time to elapsedTime every 0.1 seconds so the graphic states of Ham can cycle through the sprite sheet
 		elapsedTime += fElapsedTime;
 		if (elapsedTime >= 0.1f)
@@ -447,7 +447,7 @@ public:
 			elapsedTime = 0;
 			currentColumnOfHamSheet++;
 		}
-		
+
 		return true;
 	}
 
@@ -495,20 +495,20 @@ public:
 
 		}
 
-		
+
 	}
 
-	void loadRoom(std::vector<std::vector<Tile>> &vect)
+	void loadRoom(std::vector<std::vector<Tile>>& vect)
 	{
-			for (int i = 0; i < vect.size(); i++)
+		for (int i = 0; i < vect.size(); i++)
+		{
+			for (int j = 0; j < vect[i].size(); j++)
 			{
-				for (int j = 0; j < vect[i].size(); j++)
-				{
-					vect[i][j].setX(float(j * 100));
-					vect[i][j].setY(float(i * 100));
-				}
-
+				vect[i][j].setX(float(j * 100));
+				vect[i][j].setY(float(i * 100));
 			}
+
+		}
 	}
 
 };
