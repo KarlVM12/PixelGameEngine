@@ -395,8 +395,8 @@ public:
 			// Draws player sprite 
 			DrawPartialDecal({ float(xPosition), float(yPosition) }, { 13.0f * PLAYER_SPRITE_SCALE, 27.0f * PLAYER_SPRITE_SCALE }, decHamSheet, { (currentColumnOfHamSheet) * 13.0f, 0.0f }, { 13.0f, 27.0f });
 			
-			// Cycles through the Sprite Sheet for hamilton when it gets to the end of the sprites 
-			if (currentColumnOfHamSheet >= 4) // there are 4 different sprites on the sprite sheets and it starts at 0
+			// Cycles through the Sprite Sheet for hamilton when it gets to the end of the sprites
+      if (currentColumnOfHamSheet >= 4) // there are 4 different sprites on the sprite sheets and it starts at 0
 				currentColumnOfHamSheet = 0;
 			
 
