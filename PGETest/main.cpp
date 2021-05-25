@@ -35,10 +35,14 @@ public:
 	const float PLAYER_SPRITE_SCALE = 3.5;
 	olc::Sprite* sprHam = nullptr;
 	olc::Decal* decHam = nullptr;
+	
 	olc::Sprite* sprHamSheet = nullptr;
 	olc::Decal* decHamSheet = nullptr;
+	enum {SOUTH = 0, EAST = 1, NORTH = 2, WEST = 3, STANDING = 4} hamFacingDirection = SOUTH;
 	int currentColumnOfHamSheet = 0;
+	int currentRowOfHamSheet = hamFacingDirection;
 	float elapsedTime = 0.0f;
+	
 	double xPosition = screenSize / 2;
 	double yPosition = screenSize / 2;
 	double moveSpeed = 0.5;
@@ -99,7 +103,7 @@ public:
 		decHam = new olc::Decal(sprHam);
 
 		// loads ham sprite sheet from folder
-		sprHamSheet = new olc::Sprite("C:/Users/Karl/Documents/GameSourceArt/AHamSpriteSheet.png");
+		sprHamSheet = new olc::Sprite("C:/Users/Karl/Documents/GameSourceArt/FullHamSpriteSheet.png");
 		decHamSheet = new olc::Decal(sprHamSheet);
 
 		// initializes player collision
@@ -353,23 +357,47 @@ public:
 			if (GetKey(olc::Key::D).bHeld && allowKeyD)
 			{
 				xPosition += moveSpeed;
-				currentKey = olc::Key::D;;
+				currentKey = olc::Key::D;
+
+				// Changes direction sprite is facing that correlates to sprite sheet
+				hamFacingDirection = EAST;
+				currentRowOfHamSheet = hamFacingDirection;
 			}
 			else if (GetKey(olc::Key::A).bHeld && allowKeyA)
 			{
 				xPosition -= moveSpeed;
 				currentKey = olc::Key::A;
+
+				// Changes direction sprite is facing that correlates to sprite sheet
+				hamFacingDirection = WEST;
+				currentRowOfHamSheet = hamFacingDirection;
 			}
 			else if (GetKey(olc::Key::W).bHeld && allowKeyW)
 			{
 				yPosition -= moveSpeed;
 				currentKey = olc::Key::W;
+
+				// Changes direction sprite is facing that correlates to sprite sheet
+				hamFacingDirection = NORTH;
+				currentRowOfHamSheet = hamFacingDirection;
+
 			}
 			else if (GetKey(olc::Key::S).bHeld && allowKeyS)
 			{
 				yPosition += moveSpeed;
 				currentKey = olc::Key::S;
+
+				// Changes direction sprite is facing that correlates to sprite sheet
+				hamFacingDirection = SOUTH;
+				currentRowOfHamSheet = hamFacingDirection;
 			}
+			else
+			{
+				// Ham isn't moving
+				hamFacingDirection = STANDING;
+				currentRowOfHamSheet = hamFacingDirection;
+			}
+
 
 			// Shift causes player to run
 			if (GetKey(olc::Key::SHIFT).bHeld)
@@ -393,7 +421,7 @@ public:
 			allowKeyW = true, allowKeyA = true, allowKeyS = true, allowKeyD = true;
 
 			// Draws player sprite 
-			DrawPartialDecal({ float(xPosition), float(yPosition) }, { 13.0f * PLAYER_SPRITE_SCALE, 27.0f * PLAYER_SPRITE_SCALE }, decHamSheet, { (currentColumnOfHamSheet) * 13.0f, 0.0f }, { 13.0f, 27.0f });
+			DrawPartialDecal({ float(xPosition), float(yPosition) }, { 13.0f * PLAYER_SPRITE_SCALE, 27.0f * PLAYER_SPRITE_SCALE }, decHamSheet, { (currentColumnOfHamSheet) * 13.0f, (currentRowOfHamSheet)*27.0f }, { 13.0f, 27.0f });
 
 			// Cycles through the Sprite Sheet for hamilton when it gets to the end of the sprites
 			if (currentColumnOfHamSheet >= 4) // there are 4 different sprites on the sprite sheets and it starts at 0
@@ -440,9 +468,9 @@ public:
 
 		}
 
-		// Adds time to elapsedTime every 0.1 seconds so the graphic states of Ham can cycle through the sprite sheet
+		// Adds time to elapsedTime every 0.2 seconds so the graphic states of Ham can cycle through the sprite sheet
 		elapsedTime += fElapsedTime;
-		if (elapsedTime >= 0.1f)
+		if (elapsedTime >= 0.2f)
 		{
 			elapsedTime = 0;
 			currentColumnOfHamSheet++;
