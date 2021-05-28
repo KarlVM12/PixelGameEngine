@@ -319,10 +319,7 @@ public:
 				std::string talkOption = talkOptions[currentTalkOption];
 
 				//Drawing box that holds text
-				drawDialogueBox(); // custom function that draws box that holds dialogue at the bottom of the screen
-
-				// Draws current Dialogue to text box
-				DrawStringDecal({ 90, 530 }, talkOption, olc::WHITE, { 2.0f , 2.0f });
+				drawDialogueBox(talkOption); // custom function that draws box that holds dialogue at the bottom of the screen
 
 				// If player hits F, currentTalkOption is increased, incrementing to next dialogue
 				if (GetKey(olc::Key::F).bPressed)
@@ -540,12 +537,16 @@ public:
 		}
 	}
 
-	void drawDialogueBox()
+	// draws dialogue box at bottom of the screen with dialogue
+	void drawDialogueBox(std::string dialogue)
 	{
 		//Drawing box that holds text
 		DrawPartialDecal({ 70.0f, 510.0f }, { 50.0f, 80.0f }, decMenu, { 0.0f, 0.0f }, { 16.0f, 24.0f }); // left curved edge
 		DrawPartialDecal({ 110.0f, 510.0f }, { 380.0f, 80.0f }, decMenu, { 8.0f, 0.0f }, { 8.0f, 24.0f }); // middle long
 		DrawPartialDecal({ 490.0f, 510.0f }, { 60.0f, 80.0f }, decMenu, { 8.0f, 0.0f }, { 24.0f, 24.0f }); // right curved edge
+
+		// Draws current Dialogue to text box
+		DrawStringDecal({ 90, 530 }, dialogue, olc::WHITE, { 2.0f , 2.0f });
 	}
 
 };
