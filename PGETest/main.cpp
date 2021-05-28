@@ -319,11 +319,9 @@ public:
 				std::string talkOption = talkOptions[currentTalkOption];
 
 				//Drawing box that holds text
-				DrawPartialDecal({ 70.0f, 510.0f }, { 50.0f, 80.0f }, decMenu, { 0.0f, 0.0f }, { 16.0f, 24.0f }); // left curved edge
-				DrawPartialDecal({ 110.0f, 510.0f }, { 380.0f, 80.0f }, decMenu, { 8.0f, 0.0f }, { 8.0f, 24.0f }); // middle long
-				DrawPartialDecal({ 490.0f, 510.0f }, { 60.0f, 80.0f }, decMenu, { 8.0f, 0.0f }, { 24.0f, 24.0f }); // right curved edge
+				drawDialogueBox(); // custom function that draws box that holds dialogue at the bottom of the screen
 
-				// Draws current Dialogue to text bos
+				// Draws current Dialogue to text box
 				DrawStringDecal({ 90, 530 }, talkOption, olc::WHITE, { 2.0f , 2.0f });
 
 				// If player hits F, currentTalkOption is increased, incrementing to next dialogue
@@ -361,7 +359,6 @@ public:
 
 				// Changes direction sprite is facing that correlates to sprite sheet
 				hamFacingDirection = EAST;
-				currentRowOfHamSheet = hamFacingDirection;
 			}
 			else if (GetKey(olc::Key::A).bHeld && allowKeyA)
 			{
@@ -370,7 +367,6 @@ public:
 
 				// Changes direction sprite is facing that correlates to sprite sheet
 				hamFacingDirection = WEST;
-				currentRowOfHamSheet = hamFacingDirection;
 			}
 			else if (GetKey(olc::Key::W).bHeld && allowKeyW)
 			{
@@ -379,7 +375,6 @@ public:
 
 				// Changes direction sprite is facing that correlates to sprite sheet
 				hamFacingDirection = NORTH;
-				currentRowOfHamSheet = hamFacingDirection;
 
 			}
 			else if (GetKey(olc::Key::S).bHeld && allowKeyS)
@@ -389,13 +384,11 @@ public:
 
 				// Changes direction sprite is facing that correlates to sprite sheet
 				hamFacingDirection = SOUTH;
-				currentRowOfHamSheet = hamFacingDirection;
 			}
 			else
 			{
 				// Ham isn't moving
 				hamFacingDirection = STANDING;
-				currentRowOfHamSheet = hamFacingDirection;
 			}
 
 
@@ -420,12 +413,20 @@ public:
 			// Keys allowed to press are reset after collision stops them from being allowed
 			allowKeyW = true, allowKeyA = true, allowKeyS = true, allowKeyD = true;
 
+
+
+
+			// Gets current row that we need to use for ham sprite sheet based on direction ham is facing
+			currentRowOfHamSheet = hamFacingDirection;
+
 			// Draws player sprite 
 			DrawPartialDecal({ float(xPosition), float(yPosition) }, { 13.0f * PLAYER_SPRITE_SCALE, 27.0f * PLAYER_SPRITE_SCALE }, decHamSheet, { (currentColumnOfHamSheet) * 13.0f, (currentRowOfHamSheet)*27.0f }, { 13.0f, 27.0f });
 
 			// Cycles through the Sprite Sheet for hamilton when it gets to the end of the sprites
 			if (currentColumnOfHamSheet >= 4) // there are 4 different sprites on the sprite sheets and it starts at 0
 				currentColumnOfHamSheet = 0;
+
+
 
 
 			// Menu box that holds quills
@@ -537,6 +538,14 @@ public:
 			}
 
 		}
+	}
+
+	void drawDialogueBox()
+	{
+		//Drawing box that holds text
+		DrawPartialDecal({ 70.0f, 510.0f }, { 50.0f, 80.0f }, decMenu, { 0.0f, 0.0f }, { 16.0f, 24.0f }); // left curved edge
+		DrawPartialDecal({ 110.0f, 510.0f }, { 380.0f, 80.0f }, decMenu, { 8.0f, 0.0f }, { 8.0f, 24.0f }); // middle long
+		DrawPartialDecal({ 490.0f, 510.0f }, { 60.0f, 80.0f }, decMenu, { 8.0f, 0.0f }, { 24.0f, 24.0f }); // right curved edge
 	}
 
 };
